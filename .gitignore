@@ -301,3 +301,7 @@ TSWLatexianTemp*
 #*Notes.bib
 
 features_ring
+
+*.tsv
+
+*.npy
