@@ -207,22 +207,45 @@ Monitoring these metrics during training allows for a detailed assessment of the
 
 
 \subsection{Best Approach}
-\subsection{Feature Selection}
+\subsection{Feature Importance and Feature Selection}
+The model XGBoost is also capable of providing the importance of the features. It has three 
+different methods to calculate the importance of the features: 
+\begin{itemize}
+    \item weight: total number of times a feature is used to split data across all trees;
+    \item gain: average loss reduction gained when using a feature for splitting;
+    \item cover: the number of times a feature is used to split data across trees weighted by training data points.
+\end{itemize}
+\begin{center}
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.4]{img/fs.png}
+        \caption{Feature importance given by XGBoost model (weight)}
+        \label{fig:fs}
+    \end{figure}
+\end{center}
+In the image \ref{fig:fs} we can see the score given to each feature and the importance of them 
+for the classification of the interactions. The dataset has been modified by considering all the three method and a different number 
+of feature for each type. The results were not better than the XGBoost model which used the dataset with SMOTE and which 
+considered all the features.
+\newpage
 \section{Testing and results analysis}
 \begin{table}[h!]
     \centering
-    \begin{tabular}{|p{2cm}|c|c|c|c|}
+    \begin{tabular}{|p{1.6cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|}
     \hline
-    \textbf{Model} & \textbf{Bal\_Acc} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{AVG\_Prec} \\
+    \textbf{Model} & \textbf{Bal Acc} & \textbf{MCC} & \textbf{ROC AUC} & \textbf{AVG Prec} \\
     \hline
     XGBoost (Initial DS) & 0.3669 & 0.2956 & 0.8741 & 0.5193 \\
     \hline
-    \textbf{XGBoost (SMOTE)} & 0.6835 & 0.4956 & 0.9102 & 0.6106 \\
+    \textbf{XGBoost (SMOTE)} & \textbf{0.6835} & \textbf{0.4956} & \textbf{0.9102} & \textbf{0.6106} \\
+    \hline
+    XGBoost (Feature Selection) & 0.5161 & 0.3554 & 0.8516 & 0.5080 \\
+    \hline
+    SimpleNN (SMOTE) & 0. & 0. & 0. & 0. \\ %inserire i valori
     \hline
     \end{tabular}
     \caption{Results of the models}
 \end{table}
-
 \begin{center}
     \begin{figure}[h!]
         \centering
