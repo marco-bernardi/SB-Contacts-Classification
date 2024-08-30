@@ -152,15 +152,32 @@ As detailed in the following sections, the model struggles to accurately disting
 %inserire l'immagine con il plot dei dati
 
 \subsection{XGBoost}
-\section{Neural Network Architecture}
+XGBoost is an implementation of a gradient boosting\footnote{The boosting is an ensemble learning technique which 
+imporove the performances of the model by combining weak model} algorithm and it constructs a series of decision
+tree and improves the model each iteration. We tested this model both with the initial dataset and the dataset with the 
+SMOTE applied.
+\subsubsection{Parameter Selection}
+The parameters that seemed most important to us in the modification were the following:
+\begin{itemize}
+    \item Max\_depth: this is the maximum depth of the tree, which is a crucial parameter to avoid overfitting. 
+    It is setted to 10, which is a good compromise between the model's complexity and the risk of overfitting;
+    \item Learning\_rate: setted to 0.1. This is the right value, an higher gives to us bad results and a lower 
+    value makes the model too slow;
+    \item num\_boost\_round: this is the number of iteration. It is setted to 2500. After 2500 iteration 
+    is diffucult to see an improvement in the model;
+    \item early\_stopping\_rounds: this is the number of iteration after which the model stops if it doesn't 
+    improve. It is setted to 20.
+\end{itemize}
+
+\subsection{Neural Network Architecture}
 
 The neural network model implemented in this project is a fully connected feedforward neural network, designed to classify protein residue interactions based on the features derived from the dataset. The architecture, named `SimpleNN`, consists of four layers, each with specific roles and activation functions chosen to optimize the model's performance on this multi-class classification task.
 
-\subsection{Model Architecture}
+\subsubsection{Model Architecture}
 
 The model consists of four fully connected layers: an input layer, two hidden layers, and an output layer. The hidden layers use ReLU activation functions to process and refine the features, while dropout layers are applied after each hidden layer to prevent overfitting. The final output layer uses a softmax activation function to produce probability distributions across the target classes, suitable for multi-class classification.
 
-\subsection{Model Training}
+\subsubsection{Model Training}
 
 For the training process, the Adam optimizer was employed alongside the Cross-Entropy loss function. 
 The Adam optimizer was chosen due to its ability to efficiently handle large datasets and high-dimensional parameter spaces by adapting learning rates based on the estimates of first and second moments of the gradients. 
@@ -183,6 +200,7 @@ The chosen metrics are particularly suited for handling imbalanced class distrib
     Balanced Accuracy provides a more nuanced view of the model's performance across different classes, especially when some classes are underrepresented.
     \item \textbf{ROC-AUC Score:} The ROC-AUC score evaluates the model's ability to distinguish between classes across all classification thresholds. 
     It is particularly useful for imbalanced datasets as it measures the overall capability of the model to rank positive instances higher than negative ones. A higher ROC-AUC score indicates better performance in differentiating between classes.
+    % \item Average precision 
 \end{itemize}
 
 Monitoring these metrics during training allows for a detailed assessment of the model's effectiveness and aids in the identification of potential areas for improvement, especially in the context of imbalanced datasets.
@@ -191,7 +209,28 @@ Monitoring these metrics during training allows for a detailed assessment of the
 \subsection{Best Approach}
 \subsection{Feature Selection}
 \section{Testing and results analysis}
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|p{2cm}|c|c|c|c|}
+    \hline
+    \textbf{Model} & \textbf{Bal\_Acc} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{AVG\_Prec} \\
+    \hline
+    XGBoost (Initial DS) & 0.3669 & 0.2956 & 0.8741 & 0.5193 \\
+    \hline
+    \textbf{XGBoost (SMOTE)} & 0.6835 & 0.4956 & 0.9102 & 0.6106 \\
+    \hline
+    \end{tabular}
+    \caption{Results of the models}
+\end{table}
 
+\begin{center}
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.4]{img/cmXGBoostSMOTE.png}
+        \caption{Confusion matrix of the XGBoost model with SMOTE}
+        \label{fig:cmXGBoostSMOTE}
+    \end{figure}
+\end{center}
 
 \section{Conclusions}
 
