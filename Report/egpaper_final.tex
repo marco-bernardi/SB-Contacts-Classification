@@ -254,6 +254,11 @@ considered all the features.
     \end{figure}
 \end{center}
 
+\subsubsection{Discussion}
+The results reported show a substantial difference when dealing with SMOTE\cite{chawla2002smote} dataset and the initial one. Overall XGBoost performs well in both of them, but \textit{balanced accuracy} and \textit{MCC} see an important improvement using SMOTE, almost doubling their values. 
+
+The confusion matrix helps us understanding exactly where the model is doing wrong or right predictions. As we can see, the five less numerous classes are correctly classified by the model; thus the model is able to deal with the imbalance of the dataset. The problem arises when the model has to classify the three most prominent classes, because the '\textit{VDW}' bonds are really misleading for the right classification. That type of bonds are the worst classified of the entire dataset, leading to bad scores (Precision Score for VDW is 0.32) affecting the entire model. In fact, note that the True Positives for \textit{VDW} are around 15.000 examples while the \textit{VDW} classified as \textit{HBOND} are 4 times more numerous and the number of \textit{VDW} classified as \textit{noclass} is 3 times bigger.
+
 \section{Conclusions}
 Finally we can say the best approach we've tried have been that one which uses the XGBoost 
 with the SMOTE applied to the dataset as we can see in the table \ref{tab:results}. The model has a good performance in the classification of the 
