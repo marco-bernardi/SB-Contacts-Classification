@@ -205,8 +205,6 @@ The chosen metrics are particularly suited for handling imbalanced class distrib
 
 Monitoring these metrics during training allows for a detailed assessment of the model's effectiveness and aids in the identification of potential areas for improvement, especially in the context of imbalanced datasets.
 
-
-\subsection{Best Approach}
 \subsection{Feature Importance and Feature Selection}
 The model XGBoost is also capable of providing the importance of the features. It has three 
 different methods to calculate the importance of the features: 
@@ -245,6 +243,7 @@ considered all the features.
     \hline
     \end{tabular}
     \caption{Results of the models}
+    \label{tab:results}
 \end{table}
 \begin{center}
     \begin{figure}[h!]
@@ -256,7 +255,13 @@ considered all the features.
 \end{center}
 
 \section{Conclusions}
-
+Finally we can say the best approach we've tried have been that one which uses the XGBoost 
+with the SMOTE applied to the dataset as we can see in the table \ref{tab:results}. The model has a good performance in the classification of the 
+interactions and the confusion matrix shows that the model is able to classify the interactions in a good way. 
+The feature selection didn't give us better results than the model with all the features. 
+The main problems have been the imbalance of the dataset and the overlap of the majority classes in the 
+feature space. So, if we had more resources we could have thought of other more expensive approaches such as 
+trying to project all the data in a higher dimension space in such a way as to better separate them.
 {\small
 \bibliographystyle{ieee_fullname}
 \bibliography{egbib}
