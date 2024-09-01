@@ -305,3 +305,5 @@ features_ring
 *.tsv
 
 *.npy
+
+Models/predictor/data/output
