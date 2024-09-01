@@ -91,25 +91,26 @@ This project is centered around the development of a predictive model that can i
 
 The dataset utilized in this study comprises a collection of training examples derived from 3,299 Protein Data Bank (PDB) structures. Each PDB structure is represented by a separate file, which provides detailed information on the residue-residue contacts identified within the corresponding protein. The files are available for download and are organized such that each file contains a tab-separated table of interactions for a single PDB structure. 
 
-Across all 3,299 PDB structures, the dataset contains a total of 2,476,056 residue-residue contacts, distributed among various interaction types as follows:
+Across all 3,299 PDB structures, the dataset contains a total of 2,476,056 residue-residue contacts, distributed among various interaction types as represented in the table below \ref{ref:DatasetDistribution}.
 
 \begin{table}[h!]
-\centering
-\begin{tabular}{|l|r|}
-\hline
-\textbf{Contact Type} & \textbf{Count} \\
-\hline
-HBOND & 901,814 \\
-VDW & 640,469 \\
-PIPISTACK & 32,965 \\
-IONIC & 30,355 \\
-SSBOND & 1,792 \\
-PICATION & 7,623 \\
-PIHBOND & 1,836 \\
-Unclassified & 860,202 \\
-\hline
-\end{tabular}
-\caption{Distribution of contact types across the dataset.}
+    \centering
+    \begin{tabular}{|l|r|}
+    \hline
+    \textbf{Contact Type} & \textbf{Count} \\
+    \hline
+    HBOND & 901.814 \\
+    VDW & 640.469 \\
+    PIPISTACK & 32.965 \\
+    IONIC & 30.355 \\
+    SSBOND & 1.792 \\
+    PICATION & 7.623 \\
+    PIHBOND & 1.836 \\
+    Unclassified & 860202 \\
+    \hline
+    \end{tabular}
+    \caption{Distribution of contact types across the dataset.}
+    \label{ref:DatasetDistribution}
 \end{table}
 
 Each file is formatted as a tab-separated table, consisting of columns that provide essential details for each contact. The columns include residue identifiers, which follow the same naming conventions as those used in BioPython, along with several pre-calculated features. The final column in each table specifies the type of interaction, categorizing the contact according to the RING-defined classifications.
@@ -135,7 +136,28 @@ This reduction was performed randomly. However, this approach presents the drawb
 \paragraph{Oversampling - SMOTE}
 The Synthetic Minority Over-sampling Technique (SMOTE)\cite{chawla2002smote} was applied to generate synthetic samples for the minority classes, thereby increasing their representation in the dataset. 
 This method involves calculating the difference between a sample and its nearest neighbors, multiplying this difference by a random number between 0 and 1, and then adding the result to the original sample to create a new synthetic instance. 
-To manage computational resources and minimize the risk of introducing excessive noise into the dataset, the size of the minority classes was increased by approximately tenfold.
+To manage computational resources and minimize the risk of introducing excessive noise into the dataset, the size of the minority classes was increased by approximately tenfold as shown in the
+following table \ref{tab:smoteDataset}.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|r|}
+    \hline
+    \textbf{Contact Type} & \textbf{Count} \\
+    \hline
+    HBOND & 860.202 \\
+    VDW & 640.469 \\
+    PIPISTACK & 300.000 \\
+    IONIC & 300.000 \\
+    SSBOND & 10.000 \\
+    PICATION & 10.000 \\
+    PIHBOND & 10.000 \\
+    Unclassified & 860,202 \\
+    \hline
+    \end{tabular}
+    \caption{Distribution of contact types across the SMOTE Dataset.}
+    \label{tab:smoteDataset}
+\end{table}
 
 \paragraph{Class Merging}
 To further address the class imbalance in the dataset, several strategies were explored:
@@ -149,7 +171,7 @@ To further address the class imbalance in the dataset, several strategies were e
 As detailed in the following sections, the model struggles to accurately distinguish and classify samples from 
 the majority classes, despite the abundance of data relative to the minority classes. This difficulty arises 
 from the significant overlap between classes when visualized in a 2D feature space, where the classes appear 
-highly intermixed as we can see in the image \ref{fig:scatterDataset}. Initial efforts were directed toward addressing this specific challenge. In the \ref{fig:scatterSample} we can see also that both the
+highly intermixed as we can see in the image \ref{fig:scatterDataset}. Initial efforts were directed toward addressing this specific challenge. In the \ref{fig:scatterSampled} we can see also that both the
 majority and minority classes are really mixed (this graphic has been done by taking a subset composed for each classes, all the subset have the same dimension). 
 
 \begin{center}
@@ -163,9 +185,9 @@ majority and minority classes are really mixed (this graphic has been done by ta
 \begin{center}
     \begin{figure}[h!]
         \centering
-        \includegraphics[scale=0.4]{img/scatterSampleDataset.png}
+        \includegraphics[scale=0.4]{img/ScatterSampled.png}
         \caption{Scatter plot of a sampled dataset}
-        \label{fig:scatterSample}
+        \label{fig:scatterSampled}
     \end{figure}
 \end{center}
 
@@ -205,9 +227,29 @@ The Cross-Entropy loss function was selected because it effectively quantifies t
 Training was conducted using mini-batch gradient descent. 
 For each mini-batch, predictions were computed, the loss was calculated, and the model weights were subsequently updated. This approach allows for more frequent updates and efficient handling of large datasets.
 
+\subsection{Feature Importance and Feature Selection}
+The model XGBoost is also capable of providing the importance of the features. It has three 
+different methods to calculate the importance of the features: 
+\begin{itemize}
+    \item weight: total number of times a feature is used to split data across all trees;
+    \item gain: average loss reduction gained when using a feature for splitting;
+    \item cover: the number of times a feature is used to split data across trees weighted by training data points.
+\end{itemize}
+\begin{center}
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.37]{img/fs.png}
+        \caption{Feature importance given by XGBoost model (weight)}
+        \label{fig:fs}
+    \end{figure}
+\end{center}
+In the image \ref{fig:fs} we can see the score given to each feature and the importance of them 
+for the classification of the interactions. The dataset has been modified by considering all the three method and a different number 
+of feature for each type. The results were not better than the XGBoost model which used the dataset with SMOTE and which 
+considered all the features.
 \section{Model Evaluation Metrics}
 
-The quality of the model was assessed using various evaluation metrics, including Matthews Correlation Coefficient (MCC), Balanced Accuracy, and ROC-AUC. These metrics were closely monitored throughout the training process to track the model's performance and progression.
+The quality of the model was assessed using various evaluation metrics, including Matthews Correlation Coefficient (MCC), Balanced Accuracy, ROC-AUC, and Average Precision. These metrics were closely monitored throughout the training process to track the model's performance and progression.
 
 \subsection{Rationale for Metric Selection}
 
@@ -228,40 +270,21 @@ The chosen metrics are particularly suited for handling imbalanced class distrib
 
 Monitoring these metrics during training allows for a detailed assessment of the model's effectiveness and aids in the identification of potential areas for improvement, especially in the context of imbalanced datasets.
 
-\subsection{Feature Importance and Feature Selection}
-The model XGBoost is also capable of providing the importance of the features. It has three 
-different methods to calculate the importance of the features: 
-\begin{itemize}
-    \item weight: total number of times a feature is used to split data across all trees;
-    \item gain: average loss reduction gained when using a feature for splitting;
-    \item cover: the number of times a feature is used to split data across trees weighted by training data points.
-\end{itemize}
-\begin{center}
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[scale=0.4]{img/fs.png}
-        \caption{Feature importance given by XGBoost model (weight)}
-        \label{fig:fs}
-    \end{figure}
-\end{center}
-In the image \ref{fig:fs} we can see the score given to each feature and the importance of them 
-for the classification of the interactions. The dataset has been modified by considering all the three method and a different number 
-of feature for each type. The results were not better than the XGBoost model which used the dataset with SMOTE and which 
-considered all the features.
 \section{Testing and results analysis}
+The model has been trained on the 80\% of the dataset with the SMOTE applied and tested on the 20\% of the original dataset.
 \begin{table}[h!]
     \centering
     \begin{tabular}{|p{1.6cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|}
     \hline
-    \textbf{Model} & \textbf{Bal Acc} & \textbf{MCC} & \textbf{ROC AUC} & \textbf{AVG Prec} \\
+    \textbf{Model} & \textbf{Bal Acc} & \textbf{MCC} & \textbf{AUC ROC} & \textbf{AVG Prec} \\
     \hline
     XGBoost (Initial DS) & 0.3669 & 0.2956 & 0.8741 & 0.5193 \\
     \hline
-    \textbf{XGBoost (SMOTE)} & \textbf{0.6835} & \textbf{0.4956} & \textbf{0.9102} & \textbf{0.6106} \\
+    \textbf{XGBoost (SMOTE)} & \textbf{0.5610} & \textbf{0.4752} & \textbf{0.9228} & \textbf{0.6704} \\
     \hline
     XGBoost (Feature Selection) & 0.5161 & 0.3554 & 0.8516 & 0.5080 \\
     \hline
-    SimpleNN (SMOTE) & 0. & 0. & 0. & 0. \\ %inserire i valori
+    SimpleNN (SMOTE) & 0.4043 & 0.2321 & 0.7388 & 0.4432 \\ %inserire i valori
     \hline
     \end{tabular}
     \caption{Results of the models}
@@ -269,13 +292,13 @@ considered all the features.
 \end{table}
 
 \subsubsection{Discussion}
-The results reported show a substantial difference when dealing with SMOTE dataset and the initial one. Overall XGBoost performs well in both of them, but \textit{balanced accuracy} and \textit{MCC} see an important improvement using SMOTE, almost doubling their values. 
+The results reported show a substantial difference when dealing with SMOTE dataset and the initial one. Overall XGBoost performs well in both of them, but \textit{balanced accuracy}, \textit{MCC} and \textit{AVG precision} see an important improvement using SMOTE as we can see in the table \ref{tab:results}. 
 
-The confusion matrix \ref{fig:cmXGBoostSMOTE} helps us understanding exactly where the model is doing wrong or right predictions. As we can see, the five less numerous classes are correctly classified by the model; thus the model is able to deal with the imbalance of the dataset. The problem arises when the model has to classify the three most prominent classes, because the '\textit{VDW}' bonds are really misleading for the right classification. That type of bonds are the worst classified of the entire dataset, leading to bad scores (Precision Score for VDW is 0.32) affecting the entire model. In fact, note that the True Positives for \textit{VDW} are around 15.000 examples while the \textit{VDW} classified as \textit{HBOND} are 4 times more numerous and the number of \textit{VDW} classified as \textit{noclass} is 3 times bigger.
+The confusion matrix \ref{fig:cmXGBoostSMOTE} helps us understanding exactly where the model is doing wrong or right predictions. As we can see, the five less numerous classes are correctly classified by the model; thus the model is able to deal with the imbalance of the dataset. The problem arises when the model has to classify the three most prominent classes, because the '\textit{VDW}' bonds are really misleading for the right classification. That type of bonds are the worst classified of the entire dataset, leading to bad scores (Precision Score for VDW is ???) affecting the entire model. In fact, note that the True Positives for \textit{VDW} are around 40.000 examples while the \textit{VDW} classified as \textit{HBOND} are 50\% more numerous and the number of \textit{VDW} classified as \textit{noclass} is the 50\%.
 \begin{center}
     \begin{figure}[h!]
         \centering
-        \includegraphics[scale=0.4]{img/cmXGBoostSMOTE.png}
+        \includegraphics[scale=0.25]{img/cmXGBoostSMOTE.png}
         \caption{Confusion matrix of the XGBoost model with SMOTE}
         \label{fig:cmXGBoostSMOTE}
     \end{figure}
