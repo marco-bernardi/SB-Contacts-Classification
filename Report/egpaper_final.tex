@@ -194,7 +194,7 @@ majority and minority classes are really mixed (this graphic has been done by ta
 %inserire l'immagine con il plot dei dati
 
 \subsection{XGBoost}
-XGBoost is an implementation of a gradient boosting\footnote{The boosting is an ensemble learning technique which 
+XGBoost\cite{DBLP:journals/corr/ChenG16} is an implementation of a gradient boosting\footnote{The boosting is an ensemble learning technique which 
 imporove the performances of the model by combining weak model} algorithm and it constructs a series of decision
 tree and improves the model each iteration. We tested this model both with the initial dataset and the dataset with the 
 SMOTE applied.
@@ -238,7 +238,7 @@ different methods to calculate the importance of the features:
 \begin{center}
     \begin{figure}[h!]
         \centering
-        \includegraphics[scale=0.37]{img/fs.png}
+        \includegraphics[scale=0.28]{img/fs.png}
         \caption{Feature importance given by XGBoost model (weight)}
         \label{fig:fs}
     \end{figure}
@@ -292,13 +292,20 @@ The model has been trained on the 80\% of the dataset with the SMOTE applied and
 \end{table}
 
 \subsubsection{Discussion}
-The results reported show a substantial difference when dealing with SMOTE dataset and the initial one. Overall XGBoost performs well in both of them, but \textit{balanced accuracy}, \textit{MCC} and \textit{AVG precision} see an important improvement using SMOTE as we can see in the table \ref{tab:results}. 
+The results reported show a substantial difference when dealing with SMOTE dataset and the initial one. Overall XGBoost 
+performs well in both of them, but \textit{balanced accuracy}, \textit{MCC} and \textit{AVG precision} see an important 
+improvement using SMOTE as we can see in the table \ref{tab:results}. 
 
-The confusion matrix \ref{fig:cmXGBoostSMOTE} helps us understanding exactly where the model is doing wrong or right predictions. As we can see, the five less numerous classes are correctly classified by the model; thus the model is able to deal with the imbalance of the dataset. The problem arises when the model has to classify the three most prominent classes, because the '\textit{VDW}' bonds are really misleading for the right classification. That type of bonds are the worst classified of the entire dataset, leading to bad scores (Precision Score for VDW is ???) affecting the entire model. In fact, note that the True Positives for \textit{VDW} are around 40.000 examples while the \textit{VDW} classified as \textit{HBOND} are 50\% more numerous and the number of \textit{VDW} classified as \textit{noclass} is the 50\%.
+The confusion matrix \ref{fig:cmXGBoostSMOTE} helps us understanding exactly where the model is doing wrong or right 
+predictions. As we can see, the five less numerous classes are correctly classified by the model; thus the model is able 
+to deal with the imbalance of the dataset. The problem arises when the model has to classify the three most prominent 
+classes, because the '\textit{VDW}' bonds are really misleading for the right classification. 
+That type of bonds are the worst classified of the entire dataset, leading to bad scores affecting the entire model. 
+In fact, note that the True Positives for \textit{VDW} are around 40.000 examples while the \textit{VDW} classified as \textit{HBOND} are 50\% more numerous and the number of \textit{VDW} classified as \textit{noclass} is the 50\%.
 \begin{center}
     \begin{figure}[h!]
         \centering
-        \includegraphics[scale=0.25]{img/cmXGBoostSMOTE.png}
+        \includegraphics[scale=0.35]{img/cmXGBoostSMOTE.png}
         \caption{Confusion matrix of the XGBoost model with SMOTE}
         \label{fig:cmXGBoostSMOTE}
     \end{figure}
