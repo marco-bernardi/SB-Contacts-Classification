@@ -50,7 +50,7 @@
 \title{A Neural Network Approach to Classification of Protein Residue Interactions}
 
 \author{Andrea Auletta\\
-{\tt\small andrea.@studenti.unipd.it}
+{\tt\small andrea.auletta@studenti.unipd.it}
 % For a paper whose authors are all at the same institution,
 % omit the following lines up until the closing ``}''.
 % Additional authors and addresses can be added with ``\and'',
@@ -146,8 +146,28 @@ To further address the class imbalance in the dataset, several strategies were e
 \end{itemize}
 
 \paragraph{Challenges in Classification}
-As detailed in the following sections, the model struggles to accurately distinguish and classify samples from the majority classes, despite the abundance of data relative to the minority classes. This difficulty arises from the significant overlap between classes when visualized in a 2D feature space, where the classes appear highly intermixed. Initial efforts were directed toward addressing this specific challenge.
+As detailed in the following sections, the model struggles to accurately distinguish and classify samples from 
+the majority classes, despite the abundance of data relative to the minority classes. This difficulty arises 
+from the significant overlap between classes when visualized in a 2D feature space, where the classes appear 
+highly intermixed as we can see in the image \ref{fig:scatterDataset}. Initial efforts were directed toward addressing this specific challenge. In the \ref{fig:scatterSample} we can see also that both the
+majority and minority classes are really mixed (this graphic has been done by taking a subset composed for each classes, all the subset have the same dimension). 
 
+\begin{center}
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.4]{img/scatterOriginalDS.png}
+        \caption{Scatter plot of the dataset}
+        \label{fig:scatterDataset}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.4]{img/scatterSampleDataset.png}
+        \caption{Scatter plot of a sampled dataset}
+        \label{fig:scatterSample}
+    \end{figure}
+\end{center}
 
 %inserire l'immagine con il plot dei dati
 
@@ -195,12 +215,15 @@ The chosen metrics are particularly suited for handling imbalanced class distrib
 
 \begin{itemize}
     \item \textbf{Matthews Correlation Coefficient (MCC):} MCC is a robust metric that considers true and false positives as well as true and false negatives, making it effective for evaluating the performance of models on imbalanced datasets. 
-    Its ability to capture the balance between these quantities provides a comprehensive measure of classification quality.
+    Its ability to capture the balance between these quantities provides a comprehensive measure of classification quality;
     \item \textbf{Balanced Accuracy:} This metric calculates the average recall per class, addressing the issue of class imbalance by ensuring that each class contributes equally to the accuracy score. 
-    Balanced Accuracy provides a more nuanced view of the model's performance across different classes, especially when some classes are underrepresented.
+    Balanced Accuracy provides a more nuanced view of the model's performance across different classes, especially when some classes are underrepresented.;
     \item \textbf{ROC-AUC Score:} The ROC-AUC score evaluates the model's ability to distinguish between classes across all classification thresholds. 
-    It is particularly useful for imbalanced datasets as it measures the overall capability of the model to rank positive instances higher than negative ones. A higher ROC-AUC score indicates better performance in differentiating between classes.
-    % \item Average precision 
+    It is particularly useful for imbalanced datasets as it measures the overall capability of the model to rank positive instances higher than negative ones. A higher ROC-AUC score indicates better performance in differentiating between classes;
+    \item \textbf{Average Precision:} The Average Precision score summarize the precision-recall curve as the weighted mean of precisions achieved at different threshold. 
+    A high value of this metric indicates a better performance of the model in the classification 
+    of the true positive instances.
+
 \end{itemize}
 
 Monitoring these metrics during training allows for a detailed assessment of the model's effectiveness and aids in the identification of potential areas for improvement, especially in the context of imbalanced datasets.
@@ -225,7 +248,6 @@ In the image \ref{fig:fs} we can see the score given to each feature and the imp
 for the classification of the interactions. The dataset has been modified by considering all the three method and a different number 
 of feature for each type. The results were not better than the XGBoost model which used the dataset with SMOTE and which 
 considered all the features.
-\newpage
 \section{Testing and results analysis}
 \begin{table}[h!]
     \centering
@@ -245,6 +267,11 @@ considered all the features.
     \caption{Results of the models}
     \label{tab:results}
 \end{table}
+
+\subsubsection{Discussion}
+The results reported show a substantial difference when dealing with SMOTE dataset and the initial one. Overall XGBoost performs well in both of them, but \textit{balanced accuracy} and \textit{MCC} see an important improvement using SMOTE, almost doubling their values. 
+
+The confusion matrix \ref{fig:cmXGBoostSMOTE} helps us understanding exactly where the model is doing wrong or right predictions. As we can see, the five less numerous classes are correctly classified by the model; thus the model is able to deal with the imbalance of the dataset. The problem arises when the model has to classify the three most prominent classes, because the '\textit{VDW}' bonds are really misleading for the right classification. That type of bonds are the worst classified of the entire dataset, leading to bad scores (Precision Score for VDW is 0.32) affecting the entire model. In fact, note that the True Positives for \textit{VDW} are around 15.000 examples while the \textit{VDW} classified as \textit{HBOND} are 4 times more numerous and the number of \textit{VDW} classified as \textit{noclass} is 3 times bigger.
 \begin{center}
     \begin{figure}[h!]
         \centering
@@ -253,11 +280,6 @@ considered all the features.
         \label{fig:cmXGBoostSMOTE}
     \end{figure}
 \end{center}
-
-\subsubsection{Discussion}
-The results reported show a substantial difference when dealing with SMOTE\cite{chawla2002smote} dataset and the initial one. Overall XGBoost performs well in both of them, but \textit{balanced accuracy} and \textit{MCC} see an important improvement using SMOTE, almost doubling their values. 
-
-The confusion matrix helps us understanding exactly where the model is doing wrong or right predictions. As we can see, the five less numerous classes are correctly classified by the model; thus the model is able to deal with the imbalance of the dataset. The problem arises when the model has to classify the three most prominent classes, because the '\textit{VDW}' bonds are really misleading for the right classification. That type of bonds are the worst classified of the entire dataset, leading to bad scores (Precision Score for VDW is 0.32) affecting the entire model. In fact, note that the True Positives for \textit{VDW} are around 15.000 examples while the \textit{VDW} classified as \textit{HBOND} are 4 times more numerous and the number of \textit{VDW} classified as \textit{noclass} is 3 times bigger.
 
 \section{Conclusions}
 Finally we can say the best approach we've tried have been that one which uses the XGBoost 
