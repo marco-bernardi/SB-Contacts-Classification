@@ -272,6 +272,10 @@ Monitoring these metrics during training allows for a detailed assessment of the
 
 \section{Testing and results analysis}
 The model has been trained on the 80\% of the dataset with the SMOTE applied and tested on the 20\% of the original dataset.
+We also noticed that in the files .tsv of the proteins there are different duplicated lines which differn only for
+the interaction type which is H-Bond or VDW. This is due to the fact that (accordin to the IUPAC definition) the H-Bond definition 
+fit also the VDW definition. We decided to insert an option in the code which allows (if the user wants) 
+to remove the duplicated lines where the interaction type is H-Bond improving the model's performances.
 \begin{table}[h!]
     \centering
     \begin{tabular}{|p{1.6cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|}
@@ -281,6 +285,8 @@ The model has been trained on the 80\% of the dataset with the SMOTE applied and
     XGBoost (Initial DS) & 0.3669 & 0.2956 & 0.8741 & 0.5193 \\
     \hline
     \textbf{XGBoost (SMOTE)} & \textbf{0.5610} & \textbf{0.4752} & \textbf{0.9228} & \textbf{0.6704} \\
+    \hline
+    \textbf{XGBoost (SMOTE, No duplicates)} & \textbf{0.7045} & \textbf{0.3923} & \textbf{0.9195} & \textbf{0.6651} \\
     \hline
     XGBoost (Feature Selection) & 0.5161 & 0.3554 & 0.8516 & 0.5080 \\
     \hline
@@ -301,7 +307,8 @@ predictions. As we can see, the five less numerous classes are correctly classif
 to deal with the imbalance of the dataset. The problem arises when the model has to classify the three most prominent 
 classes, because the '\textit{VDW}' bonds are really misleading for the right classification. 
 That type of bonds are the worst classified of the entire dataset, leading to bad scores affecting the entire model. 
-In fact, note that the True Positives for \textit{VDW} are around 40.000 examples while the \textit{VDW} classified as \textit{HBOND} are 50\% more numerous and the number of \textit{VDW} classified as \textit{noclass} is the 50\%.
+In fact, note that the True Positives for \textit{VDW} are around 15.000 examples while the \textit{VDW} classified as \textit{HBOND} are 4 times more numerous and the number of \textit{VDW} classified as \textit{noclass} 
+is more then the double of the True Positives.
 \begin{center}
     \begin{figure}[h!]
         \centering
@@ -311,6 +318,30 @@ In fact, note that the True Positives for \textit{VDW} are around 40.000 example
     \end{figure}
 \end{center}
 
+\begin{center}
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.26]{img/cmNoDuplicates.png}
+        \caption{Confusion matrix of the XGBoost model with SMOTE and no duplicated lines}
+        \label{fig:cmNoDuplicates}
+    \end{figure}
+\end{center}
+In the figure \ref{fig:cmNoDuplicates} we can see that the number of H-Bond is drastically decreased,
+in this way the model is slightly better in the classification of the VDW bonds and the balanced accuracy is 
+improved a lot. Anyway the model still tends to classify lots of VDW interactions as H-Bond leading to 
+a worst MCC score.
+
+\subsection{Examples}
+The following example is a comparison between an exact prediction of the model and the real interaction type:
+\begin{itemize}
+    \item Real: 5mt2 A 238 K E 0.244 4 25 -1.423 2.492 H 1.831 -0.561 0.533 -0.277 1.648 A 267 D T 0.62 3 20 -1.169 2.155 H 1.05 0.302 -3.656 -0.259 -3.242 \textbf{HBOND}
+    \item Prediction: 5mt2 A 238 K E 0.244 4 25 -1.423 2.492 H 1.831 -0.561 0.533 -0.277 1.648 A 267 D T 0.62 3 20 -1.169 2.155 H 1.05 0.302 -3.656 -0.259 -3.242 \textbf{HBOND}
+\end{itemize} 
+Otherwise the following example is a comparison between a wrong prediction of the model and the real interaction type:
+\begin{itemize}
+    \item 5mt2    A    116         K    S    0.366    16    4    -2.01    2.937    H    1.831    -0.561    0.533    -0.277    1.648    A    186         D    S    0.564    3    16    -1.573    0.215    H    1.05    0.302    -3.656 -0.259 -3.242 \textbf{IONIC}
+    \item 5mt2    A    116         K    S    0.366    16    4    -2.01    2.937    H    1.831    -0.561    0.533    -0.277    1.648    A    186         D    S    0.564    3    16    -1.573    0.215    H    1.05    0.302    -3.656 -0.259 -3.242 \textbf{Unclassified}
+\end{itemize}
 \section{Conclusions}
 In conclusion, the best approach we have tested is the one that utilizes XGBoost with SMOTE applied to the dataset, as shown in Table \ref{tab:results}. 
 The model demonstrates strong performance in classifying interactions, and the confusion matrix indicates that the model is capable of accurately categorizing the interactions. 
