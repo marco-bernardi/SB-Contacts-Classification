@@ -306,4 +306,8 @@ features_ring
 
 *.npy
 
-Models/predictor/data/output
+Predictor/data/output
+Predictor/data/models
+
+# __pycache__ files
+__pycache__/
